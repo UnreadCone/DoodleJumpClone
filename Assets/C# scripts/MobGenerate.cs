@@ -5,27 +5,29 @@ using UnityEngine;
 
 public class MobGenerate : MonoBehaviour
 {
-    public GameObject mobPrefab; // префаб объекта, который будет появляться
-    public float spawnDelay = 10f; // задержка перед появлением объекта
-private bool canSpawn = true; // флаг для проверки возможности появления
+    public GameObject mobPrefab;
+    public float spawnDelay = 5f;
+    private bool canSpawn = true;
+
 
     private void Start()
     {
+
         StartCoroutine(SpawnMob());
     }
 
     private IEnumerator SpawnMob()
     {
-        yield return new WaitForSeconds(spawnDelay); // ждем 10 секунд перед первым появлением объекта
+        yield return new WaitForSeconds(spawnDelay);
 
         while (true)
         {
             if (canSpawn)
             {
-                GenerateMob(); // вызываем функцию для создания объекта
-                canSpawn = false; // отключаем возможность появления объекта
-                yield return new WaitForSeconds(spawnDelay); // ждем 10 секунд перед следующим появлением
-                canSpawn = true; // включаем возможность появления объекта
+                GenerateMob();
+                canSpawn = false;
+                yield return new WaitForSeconds(spawnDelay);
+                canSpawn = true; 
             }
             yield return null;
         }
@@ -33,7 +35,7 @@ private bool canSpawn = true; // флаг для проверки возможности появления
 
     private void GenerateMob()
     {
-        float randomX = UnityEngine.Random.Range(-3, 3);
-        GameObject mob = Instantiate(mobPrefab, new Vector3(randomX, transform.position.y, transform.position.z), Quaternion.identity);
+        float randomX = UnityEngine.Random.Range(-2, 2);
+        GameObject mob = Instantiate(mobPrefab, new Vector3(randomX, 3, transform.position.z), Quaternion.identity);
     }
 }

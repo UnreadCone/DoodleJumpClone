@@ -7,16 +7,21 @@ public class Platform : MonoBehaviour
     public int score = 0;
     public Text scoreText;
     public Text bestRecordText;
-    public Text[] recordTexts; // Добавлен массив для хранения ссылок на текстовые поля рекордов
-    public Button resetButton; // Добавьте это поле в начало вашего класса
+    public Text[] recordTexts;
+    public Button resetButton;
     private List<int> uniqueRecords = new List<int>();
+    public PlatformGenerator platformGenerator;
+    private AudioSource audioSource;
+    public AudioClip jumpSound;
+
     private void Start()
     {
         resetButton.onClick.AddListener(ResetRecords);
         ScoreManager.LoadScore();
         UpdateScoreText();
         UpdateBestRecordText();
-        UpdateRecordTexts(); // Добавлен вызов функции обновления текстовых полей рекордов
+        UpdateRecordTexts();
+        audioSource = GetComponent<AudioSource>();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -24,12 +29,19 @@ public class Platform : MonoBehaviour
         if (collision.relativeVelocity.y < 0)
         {
             ScoreManager.AddScore(1);
-            score++; // Увеличиваем счет здесь
+            score++;
             UpdateScoreText();
-            UpdateBestRecordText(); // Обновляем лучший рекорд здесь
+            UpdateBestRecordText();
             ScoreManager.SaveScore();
-            UpdateRecordTexts(); // Добавлен вызов функции обновления текстовых полей рекордов
-            Doodle.instance.DoodleRigid.velocity = Vector2.up * 8;
+            UpdateRecordTexts();
+            float angle = transform.rotation.eulerAngles.z;
+            Vector2 jumpDirection = Quaternion.Euler(0, 0, angle) * Vector2.up;
+            Doodle.instance.DoodleRigid.AddForce(jumpDirection * 525);
+            if (audioSource != null && jumpSound != null)
+            {
+                audioSource.PlayOneShot(jumpSound);
+            }
+            platformGenerator.MovePlatform();
         }
     }
 
@@ -37,14 +49,14 @@ public class Platform : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = score.ToString(); // Просто обновляем текстовое поле
+            scoreText.text = score.ToString();
         }
     }
 
     private void UpdateBestRecordText()
     {
         int bestRecord = PlayerPrefs.GetInt("HighScore", 0);
-        if (score > bestRecord) // Если текущий счет больше лучшего рекорда, обновляем лучший рекорд
+        if (score > bestRecord)
         {
             PlayerPrefs.SetInt("HighScore", score);
             bestRecord = score;
@@ -76,20 +88,18 @@ public class Platform : MonoBehaviour
             }
             else
             {
-                recordTexts[i].text = ""; // Очищаем текстовое поле, если нет уникального рекорда для отображения
+                recordTexts[i].text = "";
             }
         }
     }
 
-    // Функция для сброса всех рекордов
     public void ResetRecords()
     {
         for (int i = 0; i < recordTexts.Length; i++)
         {
             PlayerPrefs.DeleteKey("Record" + (i + 1));
         }
-        // Также сбрасываем лучший рекорд
         PlayerPrefs.DeleteKey("HighScore");
-        UpdateRecordTexts(); // Обновляем отображение рекордов после сброса
+        UpdateRecordTexts();
     }
 }

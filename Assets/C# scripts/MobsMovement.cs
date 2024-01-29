@@ -6,11 +6,13 @@ public class RandomMovement : MonoBehaviour
     public float speed = 2.0f;
     public float boundary = 1 / 2f;
     public Vector3 targetScale = new Vector3(1.821959f, 1.821959f, 1.0f);
+    public Vector3 initialScale = new Vector3(0.1f, 0.1f, 0.1f);
     private Vector3 initialPosition;
     private bool isScaling = false;
     void Start()
     {
         initialPosition = transform.position;
+        transform.localScale = initialScale;
     }
     void Update()
     {
@@ -24,7 +26,7 @@ public class RandomMovement : MonoBehaviour
             transform.position = initialPosition;
             if (!isScaling)
             {
-                StartCoroutine(ScaleOverTime(1.0f)); // Start scaling
+                StartCoroutine(ScaleOverTime(1.0f));
             }
         }
     }
@@ -43,11 +45,16 @@ public class RandomMovement : MonoBehaviour
         transform.localScale = targetScale;
         isScaling = false;
     }
-    public void OnCollisionEnter2D(Collision2D collision)       // столкновение объекта  
+    public void OnCollisionEnter2D(Collision2D collision) 
     {
         if (collision.collider.name == "ROBOT")
         {
             SceneManager.LoadScene(2);
+        }
+        if (collision.gameObject.CompareTag("Bullet"))
+        {
+            Destroy(collision.gameObject);
+            Destroy(gameObject);
         }
     }
 }

@@ -18,7 +18,7 @@ public class ScoreManager : MonoBehaviour
             PlayerPrefs.SetInt("HighScore", score);
         }
 
-        UpdateRecordScores(); // Добавлен вызов функции обновления рекордов в таблице
+        UpdateRecordScores();
     }
 
     public static void LoadScore()

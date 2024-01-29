@@ -14,8 +14,6 @@ public class MoveBackground : MonoBehaviour
         back_Tranform = GetComponent<Transform>();
         back_Size = GetComponent<SpriteRenderer>().bounds.size.y;
     }
-
-    // Update is called once per frame
     void Update()
     {
         Move();
